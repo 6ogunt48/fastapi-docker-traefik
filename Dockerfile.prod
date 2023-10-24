@@ -1,0 +1,10 @@
+FROM tiangolo/uvicorn-gunicorn:python3.11-slim
+
+COPY ./pyproject.toml ./poetry.lock ./
+RUN apt-get update && apt-get -y install netcat-openbsd && pip install --upgrade pip && pip install poetry && poetry config virtualenvs.create false && poetry install
+COPY . .
+
+# Fine-tuning workers
+# Set environment variable for Gunicorn config
+ENV GUNICORN_CMD="gunicorn -w 4 -k uvicorn.workers.UvicornWorker"
+
